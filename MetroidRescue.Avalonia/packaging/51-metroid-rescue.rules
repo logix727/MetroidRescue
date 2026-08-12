@@ -1,0 +1,2 @@
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTR{idVendor}=="2c3f", MODE="0660", GROUP="plugdev", TAG+="uaccess"

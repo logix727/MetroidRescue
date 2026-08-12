@@ -1,0 +1,18 @@
+# Build output
+bin/
+obj/
+dist/
+
+# Release archives
+*.zip
+*.7z
+*.tar.gz
+
+# Rider/VS user files
+*.user
+.idea/
+.vs/
+
+# Download cache / temp
+*.tmp
+linux-temp/

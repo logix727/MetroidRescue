@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MetroidRescue.Avalonia.MainWindow" Title="Metroid Rescue" Width="1180" Height="860"
+        MinWidth="940" MinHeight="700" Background="#F4F4F0">
+  <Window.Styles>
+    <Style Selector="Button"><Setter Property="Background" Value="#171717"/><Setter Property="Foreground" Value="White"/><Setter Property="Padding" Value="16,10"/><Setter Property="FontWeight" Value="Bold"/><Setter Property="CornerRadius" Value="0"/></Style>
+    <Style Selector="Button.danger"><Setter Property="Background" Value="#D2232A"/></Style>
+    <Style Selector="Border.card"><Setter Property="Background" Value="White"/><Setter Property="Padding" Value="18"/><Setter Property="Margin" Value="0,0,10,10"/><Setter Property="CornerRadius" Value="0"/></Style>
+    <Style Selector="TextBlock.step"><Setter Property="FontFamily" Value="Monospace"/><Setter Property="FontWeight" Value="Bold"/><Setter Property="Foreground" Value="#D2232A"/></Style>
+  </Window.Styles>
+  <Grid RowDefinitions="112,Auto,Auto,*,230" Margin="20">
+    <Border Grid.Row="0" Background="#131313" Padding="24">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel><TextBlock Text="METROID RESCUE" FontSize="30" FontWeight="Bold" Foreground="White"/><TextBlock Text="LINUX-FIRST  /  NOTHING PHONE (3)  /  CUSTOM ROM RECOVERY" FontFamily="Monospace" Foreground="#BDBDBD" Margin="2,8,0,0"/></StackPanel>
+        <Border Grid.Column="1" Background="#D2232A" Padding="10,5" VerticalAlignment="Top"><TextBlock Text="FASTBOOT REQUIRED" Foreground="White" FontWeight="Bold"/></Border>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Margin="0,14,0,10">
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Text="GET INTO FASTBOOT" Classes="step" Margin="0,0,22,0"/>
+        <TextBlock Grid.Column="1" TextWrapping="Wrap" Text="1. Disconnect USB.  2. Hold Power + Volume Down for about 10 seconds.  3. When the Nothing logo appears, release Power but keep holding Volume Down until Fastboot Mode appears.  4. Connect USB.  5. Click VERIFY PHONE.  Every adb/fastboot command and response appears below."/>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="2" ColumnDefinitions="2*,2*,Auto" Margin="0,0,0,10">
+      <Border Classes="card"><StackPanel><TextBlock x:Name="DeviceState" Text="NO DEVICE VERIFIED" FontSize="17" FontWeight="Bold"/><TextBlock x:Name="DeviceDetails" Text="Waiting for fastboot product: metroid" Foreground="#686868" TextWrapping="Wrap" Margin="0,6,0,0"/></StackPanel></Border>
+        <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock x:Name="FirmwareState" Text="NO STOCK OTA SELECTED" FontSize="17" FontWeight="Bold"/><TextBlock x:Name="FirmwareDetails" Text="LOS recovery requires a Metroid full OTA from Nothing Archive." Foreground="#686868" TextWrapping="Wrap" Margin="0,6,0,0"/><Button Content="DOWNLOAD VERIFIED CATALOG OTA" HorizontalAlignment="Left" Margin="0,8,0,0" Click="Catalog_Click"/></StackPanel></Border>
+      <StackPanel Grid.Column="2" Spacing="8"><Button Content="VERIFY PHONE" Click="Scan_Click"/><Button x:Name="SetupButton" Content="SET UP LINUX USB" Click="Setup_Click"/><Button Content="EXPORT SUPPORT ZIP" Click="Support_Click"/></StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="3" RowDefinitions="Auto,*">
+      <Border Background="#131313" Padding="18" Margin="0,0,0,10">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button x:Name="AutoButton" Classes="danger" Content="AUTOMATIC LOS RESCUE" Click="Auto_Click" FontSize="15"/>
+          <StackPanel Grid.Column="1" Margin="20,0"><TextBlock x:Name="PhaseText" Text="Verifies metroid, extracts full stock firmware, restores slot A, reboots, then monitors Android." Foreground="White" TextWrapping="Wrap"/><ProgressBar x:Name="RescueProgress" Minimum="0" Maximum="100" Value="0" Height="10" Margin="0,10,0,0"/></StackPanel>
+          <Button x:Name="CancelButton" Grid.Column="2" Content="STOP AFTER CURRENT COMMAND" Click="Cancel_Click" IsVisible="False"/>
+        </Grid>
+      </Border>
+      <Grid Grid.Row="1" ColumnDefinitions="*,*">
+        <Border Classes="card"><StackPanel Spacing="10"><TextBlock Text="WHAT AUTOMATION DOES" Classes="step"/><TextBlock TextWrapping="Wrap" Text="For an unofficial LineageOS bootloop, boot-chain-only repair is insufficient. Automatic LOS Rescue extracts and restores stock boot, firmware, and logical partitions using the Metroid partition layout, targets slot A, preserves userdata by default, and never unlocks or relocks the bootloader."/><Button Content="SELECT METROID FULL OTA" HorizontalAlignment="Left" Click="Firmware_Click"/><Button Content="OPEN NOTHING ARCHIVE" HorizontalAlignment="Left" Click="Archive_Click"/></StackPanel></Border>
+        <Border Grid.Column="1" Classes="card"><StackPanel Spacing="10"><TextBlock Text="SAFETY LIMITS" Classes="step"/><TextBlock TextWrapping="Wrap" Text="Not guaranteed until tested on real hardware. The bootloader must already be unlocked for stock image writes. A wrong or incomplete OTA is rejected. Userdata is not erased automatically. If fastboot disappears, the app stops and tells you how to return using Power + Volume Down."/><CheckBox x:Name="WipeCheck" Content="Wipe userdata after restore (optional, destructive)" Foreground="#D2232A" FontWeight="Bold"/></StackPanel></Border>
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="4" Background="#131313" Padding="12" Margin="0,10,0,0">
+      <TextBox x:Name="LogBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Monospace" FontSize="12" Background="#131313" Foreground="#D8D8D8" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+    </Border>
+  </Grid>
+</Window>

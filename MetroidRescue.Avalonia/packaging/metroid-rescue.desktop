@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Metroid Rescue
+Comment=Nothing Phone (3) fastboot recovery utility
+Exec=metroid-rescue
+Icon=metroid-rescue
+Terminal=false
+Categories=System;Utility;
