@@ -21,6 +21,11 @@ The release ZIP contains:
 
 Do not use v0.1.0. Its untested full-restore sequence was withdrawn after a static safety audit. Use the latest release only.
 
+Current release: [v0.2.0](https://github.com/logix727/MetroidRescue/releases/tag/v0.2.0)
+
+- [Direct v0.2.0 ZIP download](https://github.com/logix727/MetroidRescue/releases/download/v0.2.0/MetroidRescue-v0.2.0.zip)
+- ZIP SHA-256: `320aa71aac8e0170fcd3211864c09ad1c1b9f3d54aedac8586fe114c671e1e08`
+
 Releases are currently unsigned. Verify the SHA-256 before running them.
 
 Windows PowerShell:
