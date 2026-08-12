@@ -36,7 +36,7 @@ jobs:
           -c Release -r ${{ matrix.runtime }} --self-contained true
           -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
           -o artifacts/${{ matrix.runtime }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: MetroidRescue-${{ matrix.runtime }}
           path: artifacts/${{ matrix.runtime }}
