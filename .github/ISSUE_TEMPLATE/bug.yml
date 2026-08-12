@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible application or recovery problem
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: checkboxes
+    attributes:
+      label: Safety checks
+      options:
+        - label: I confirmed the connected phone is a Nothing Phone (3), codename metroid.
+          required: true
+        - label: I removed serial numbers and other private information from logs.
+          required: true
+  - type: input
+    attributes:
+      label: Metroid Rescue version
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Host operating system
+      options: [Windows 11, Ubuntu 24.04, Ubuntu 22.04, Other Linux]
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Phone state
+      options: [Bootloader fastboot, fastbootd, ADB online, Bootloop, Other]
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Include the action, expected behavior, and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Redacted logs or support bundle
+      description: Drag the generated support ZIP here. Remove serial numbers before uploading.

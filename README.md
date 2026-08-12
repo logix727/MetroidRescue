@@ -1,5 +1,8 @@
 # Metroid Rescue
 
+[![CI](https://github.com/logix727/MetroidRescue/actions/workflows/ci.yml/badge.svg)](https://github.com/logix727/MetroidRescue/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/logix727/MetroidRescue)](https://github.com/logix727/MetroidRescue/releases/latest)
+
 Experimental Linux-first recovery utility for the Nothing Phone (3), codename `metroid`. Designed to help users recover from bootloops or a stuck Nothing logo when the phone can still enter Fastboot Mode.
 
 > **WARNING:** This is an experimental community utility, not affiliated with or endorsed by Nothing Technology Limited. Flashing firmware always carries risk. See `RELEASE_BLOCKERS.md` for the current testing/signing status.
@@ -35,6 +38,10 @@ dotnet publish MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj -c Release -
 ```
 
 Linux packages: see `MetroidRescue.Avalonia/packaging/` for `.deb` and AppImage scripts and the udev rule. See `MetroidRescue.Avalonia/LINUX.md` for runtime setup.
+
+## Download
+
+Use the [latest GitHub release](https://github.com/logix727/MetroidRescue/releases/latest). Release archives contain both `win-x64` and `linux-x64` builds plus `SHA256SUMS`. Releases are currently unsigned; verify the accompanying SHA-256 file before use.
 
 ## Test
 

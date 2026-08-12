@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release
+
+  publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [linux-x64, win-x64]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish ${{ matrix.runtime }}
+        run: >-
+          dotnet publish MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj
+          -c Release -r ${{ matrix.runtime }} --self-contained true
+          -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
+          -o artifacts/${{ matrix.runtime }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MetroidRescue-${{ matrix.runtime }}
+          path: artifacts/${{ matrix.runtime }}
+          if-no-files-found: error

@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a safe improvement
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+      description: What recovery or usability problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Safety
+      options:
+        - label: This does not request automatic bootloader unlocking, relocking, or an unconfirmed data wipe.
+          required: true
