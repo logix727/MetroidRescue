@@ -12,13 +12,14 @@ internal sealed class PreflightService
     private readonly Action<string> _log;
     public PreflightService(FastbootService fastboot, FirmwareService firmware, Action<string> log) { _fastboot = fastboot; _firmware = firmware; _log = log; }
 
-    public async Task<PreflightReport> RunAsync(FastbootDevice device, CancellationToken token = default)
+    public async Task<PreflightReport> RunAsync(FastbootDevice device, string targetSlot, CancellationToken token = default)
     {
         var warnings = new List<string>(); var checks = new List<string>();
         for (var attempt = 1; attempt <= 3; attempt++)
         {
             var probe = await _fastboot.RunAsync(["-s", device.Serial, "getvar", "product"], token);
-            if (!probe.Success || !probe.Output.Contains("metroid", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException($"USB stability probe {attempt}/3 failed.");
+            var product = Regex.Match(probe.Output, @"(?:\(bootloader\)\s*)?product:\s*([^\r\n]+)", RegexOptions.IgnoreCase).Groups[1].Value.Trim();
+            if (!probe.Success || !product.Equals("metroid", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException($"USB stability probe {attempt}/3 failed.");
             checks.Add($"USB stability probe {attempt}/3 passed");
             await Task.Delay(350, token);
         }
@@ -32,11 +33,16 @@ internal sealed class PreflightService
         if (maxDownload is not null) checks.Add($"Fastboot max download {maxDownload / 1024d / 1024d:F0} MB");
         else warnings.Add("Fastboot did not report max-download-size.");
 
-        foreach (var partition in FirmwareService.BootPartitions.Concat(FirmwareService.FirmwarePartitions).Concat(["vbmeta"]))
+        var snapshot = await GetTextAsync(device, "snapshot-update-status", token);
+        if (!IsSnapshotSafe(snapshot))
+            throw new InvalidOperationException($"Virtual A/B snapshot state is '{snapshot}'. Complete or cancel the OTA merge before recovery writes.");
+        checks.Add(string.IsNullOrWhiteSpace(snapshot) ? "Snapshot state not reported" : "No active Virtual A/B snapshot update");
+
+        foreach (var partition in FirmwareService.RescuePartitions)
         {
-            var target = partition + "_a";
+            var target = partition + "_" + targetSlot;
             var partitionSize = await GetHexAsync(device, "partition-size:" + target, token);
-            if (partitionSize is null) { warnings.Add($"Could not preflight partition size for {target}."); continue; }
+            if (partitionSize is null) throw new InvalidOperationException($"Could not verify partition size for required target {target}.");
             var imageSize = new FileInfo(_firmware.ImagePath(partition)).Length;
             if (imageSize > partitionSize) throw new InvalidOperationException($"{partition}.img ({imageSize} bytes) exceeds {target} ({partitionSize} bytes).");
             checks.Add($"{target} size accepts image");
@@ -63,4 +69,14 @@ internal sealed class PreflightService
             ? long.TryParse(text[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var hex) ? hex : null
             : long.TryParse(text, out var value) ? value : null;
     }
+
+    private async Task<string?> GetTextAsync(FastbootDevice device, string variable, CancellationToken token)
+    {
+        var result = await _fastboot.RunAsync(["-s", device.Serial, "getvar", variable], token);
+        if (!result.Success) return null;
+        var match = Regex.Match(result.Output, Regex.Escape(variable) + @":\s*([^\r\n]+)", RegexOptions.IgnoreCase);
+        return match.Success ? match.Groups[1].Value.Trim() : null;
+    }
+
+    internal static bool IsSnapshotSafe(string? state) => state?.Equals("none", StringComparison.OrdinalIgnoreCase) == true;
 }

@@ -7,6 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>MetroidRescue</AssemblyName>
     <RootNamespace>MetroidRescue.Avalonia</RootNamespace>
+    <Version>0.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +32,7 @@
     <Compile Include="..\MetroidRescue\ProvenanceService.cs" Link="Core\ProvenanceService.cs" />
     <Compile Include="..\MetroidRescue\PreflightService.cs" Link="Core\PreflightService.cs" />
     <Compile Include="..\MetroidRescue\RecoveryReportService.cs" Link="Core\RecoveryReportService.cs" />
+    <Compile Include="..\MetroidRescue\ConservativeRecoveryPlan.cs" Link="Core\ConservativeRecoveryPlan.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tools\win-x64\adb.exe;Tools\win-x64\fastboot.exe;Tools\win-x64\AdbWinApi.dll;Tools\win-x64\AdbWinUsbApi.dll;Tools\win-x64\payload-dumper-go.exe;Tools\linux-x64\adb;Tools\linux-x64\fastboot;Tools\linux-x64\payload-dumper-go;Tools\windows-driver\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />

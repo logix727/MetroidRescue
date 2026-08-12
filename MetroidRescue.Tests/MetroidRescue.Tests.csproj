@@ -27,6 +27,9 @@
     <Compile Include="..\MetroidRescue\CommandRunner.cs" Link="Core\CommandRunner.cs" />
     <Compile Include="..\MetroidRescue\ToolPaths.cs" Link="Core\ToolPaths.cs" />
     <Compile Include="..\MetroidRescue\FirmwareService.cs" Link="Core\FirmwareService.cs" />
+    <Compile Include="..\MetroidRescue\RecoveryMonitor.cs" Link="Core\RecoveryMonitor.cs" />
+    <Compile Include="..\MetroidRescue\ConservativeRecoveryPlan.cs" Link="Core\ConservativeRecoveryPlan.cs" />
+    <Compile Include="..\MetroidRescue\PreflightService.cs" Link="Core\PreflightService.cs" />
   </ItemGroup>
 
 </Project>

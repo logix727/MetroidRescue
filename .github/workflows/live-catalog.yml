@@ -1,0 +1,21 @@
+name: Live catalog validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 8 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    env:
+      METROID_RESCUE_LIVE_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release --filter Category=Live

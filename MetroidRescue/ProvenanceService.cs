@@ -14,8 +14,17 @@ internal sealed class ProvenanceService
 
     public async Task<FirmwareProvenance> CreateAsync(FirmwareInfo info, FirmwareCatalogEntry? source, IEnumerable<string> partitions, IReadOnlyDictionary<string, string>? publishedImageHashes = null, CancellationToken token = default)
     {
+        var requested = partitions.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        if (source is not null)
+        {
+            if (publishedImageHashes is null || publishedImageHashes.Count == 0)
+                throw new InvalidOperationException("Published extracted-image checksums are unavailable for this catalog OTA.");
+            var missing = requested.Where(partition => !publishedImageHashes.ContainsKey(partition)).ToArray();
+            if (missing.Length > 0)
+                throw new InvalidOperationException($"Published image manifest is incomplete: {string.Join(", ", missing)}");
+        }
         var images = new List<ImageProvenance>();
-        foreach (var partition in partitions)
+        foreach (var partition in requested)
         {
             var path = _firmware.ImagePath(partition);
             await using var stream = File.OpenRead(path);

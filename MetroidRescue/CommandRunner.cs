@@ -33,7 +33,16 @@ internal static class CommandRunner
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        await process.WaitForExitAsync(cancellationToken);
+        try
+        {
+            await process.WaitForExitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            if (!process.HasExited) process.Kill(true);
+            await process.WaitForExitAsync();
+            throw;
+        }
         return new CommandResult(process.ExitCode, string.Join(Environment.NewLine, output));
 
         void Capture(string? line)

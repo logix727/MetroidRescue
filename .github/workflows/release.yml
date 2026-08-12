@@ -16,7 +16,14 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Test
+        env:
+          METROID_RESCUE_LIVE_TESTS: "true"
         run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release
+      - name: Verify tag matches project version
+        shell: bash
+        run: |
+          version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj)
+          test "${GITHUB_REF_NAME}" = "v${version}"
       - name: Publish Windows and Linux
         shell: bash
         run: |
@@ -33,6 +40,9 @@ jobs:
           chmod +x dist/linux-x64/MetroidRescue dist/linux-x64/run-metroid-rescue.sh \
             dist/linux-x64/Tools/linux-x64/adb dist/linux-x64/Tools/linux-x64/fastboot \
             dist/linux-x64/Tools/linux-x64/payload-dumper-go
+          dist/linux-x64/Tools/linux-x64/adb version
+          dist/linux-x64/Tools/linux-x64/fastboot --version
+          dist/linux-x64/Tools/linux-x64/payload-dumper-go -h >/dev/null
       - name: Package and checksum
         shell: bash
         run: |

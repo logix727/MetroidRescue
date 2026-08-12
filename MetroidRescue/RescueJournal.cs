@@ -8,7 +8,7 @@ internal sealed class RescueJournal
 {
     private readonly string _directory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MetroidRescue");
     private string JournalPath => System.IO.Path.Combine(_directory, "rescue-journal.jsonl");
-    public string SessionId { get; } = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+    public string SessionId { get; } = Guid.NewGuid().ToString("N");
 
     public void Record(string step, string status, FastbootDevice? device = null, FirmwareInfo? firmware = null, string detail = "")
     {

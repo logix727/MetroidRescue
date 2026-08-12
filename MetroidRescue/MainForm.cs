@@ -29,6 +29,7 @@ internal sealed class MainForm : Form
     private FastbootDevice? _device;
     private string? _otaPath;
     private bool _busy;
+    private readonly SemaphoreSlim _operation = new(1, 1);
     private CancellationTokenSource? _autoCancellation;
 
     public MainForm()
@@ -45,6 +46,11 @@ internal sealed class MainForm : Form
         _firmware = new FirmwareService(Log);
         _monitor = new RecoveryMonitor(Log);
         BuildUi();
+        _alternateSlotButton.Enabled = false;
+        _bootChainButton.Enabled = false;
+        _factoryResetButton.Enabled = false;
+        _autoRescueButton.Enabled = false;
+        _autoState.Text = "Legacy UI is diagnostics-only. Use the Avalonia app for catalog-authenticated conservative recovery.";
         Shown += async (_, _) => await ScanAsync();
     }
 
@@ -122,7 +128,7 @@ internal sealed class MainForm : Form
         var reboot = RescueCard("01", "REBOOT CLEANLY", "Safest first step. Reboots without writing partitions.", "REBOOT SYSTEM", async () => await RunFastbootAsync(["reboot"], false));
         var slot = RescueCard("02", "TRY THE OTHER SLOT", "Changes the active A/B slot, then reboots. Useful after a failed OTA.", _alternateSlotButton, TryAlternateSlotAsync);
         var extract = RescueCard("03", "LOAD STOCK RESCUE IMAGES", "Select a Nothing Archive Metroid full OTA and extract only boot-chain images.", _extractButton, SelectAndExtractAsync);
-        var bootChain = RescueCard("04", "RESTORE STOCK BOOT CHAIN", "Flashes boot, init_boot, dtbo, vendor_boot and vbmeta to the active slot. Userdata is preserved.", _bootChainButton, RestoreBootChainAsync);
+        var bootChain = RescueCard("04", "RESTORE STOCK BOOT CHAIN", "Flashes boot, init_boot, dtbo, recovery, vendor_boot and vbmeta to the active slot. Userdata is preserved.", _bootChainButton, RestoreBootChainAsync);
         grid.Controls.Add(reboot, 0, 0);
         grid.Controls.Add(slot, 1, 0);
         grid.Controls.Add(extract, 0, 1);
@@ -358,7 +364,7 @@ internal sealed class MainForm : Form
         var device = await RequireDeviceAsync(true); if (device is null) return;
         if (!_firmware.ImagesReady) { ShowError("Load rescue images from a Metroid full OTA first."); return; }
         var slot = string.IsNullOrWhiteSpace(device.Slot) ? "a" : device.Slot;
-        if (!Confirm($"Restore the stock boot chain to slot {slot}?\n\nThis writes boot, init_boot, dtbo, vendor_boot and vbmeta. Userdata is preserved. Use images matching the installed Nothing OS version when possible.")) return;
+        if (!Confirm($"Restore the stock boot chain to slot {slot}?\n\nThis writes boot, init_boot, dtbo, recovery, vendor_boot and vbmeta. Userdata is preserved. Use images matching the installed Nothing OS version when possible.")) return;
         await BusyAsync(async () =>
         {
             foreach (var partition in FirmwareService.RescuePartitions)
@@ -395,18 +401,26 @@ internal sealed class MainForm : Form
 
     private async Task EnsureSuccessAsync(string[] args, CancellationToken token = default)
     {
-        var result = await _fastboot.RunAsync(args, token);
+        if (args.Length < 3 || args[0] != "-s") throw new InvalidOperationException("Guarded fastboot command requires an explicit serial.");
+        var command = args[2];
+        if (command is "flash" or "erase" or "set_active")
+            throw new InvalidOperationException("Legacy UI writes are disabled. Use the Avalonia app's catalog-authenticated conservative recovery.");
+        var requireUnlocked = command is "flash" or "erase" or "set_active";
+        var result = command == "reboot"
+            ? await _fastboot.RunRecoveryCommandAsync(args[1], args.Skip(2), token)
+            : throw new InvalidOperationException("Legacy UI writes are disabled.");
         if (!result.Success) throw new InvalidOperationException($"fastboot failed: {string.Join(' ', args)}");
     }
 
     private async Task BusyAsync(Func<Task> action)
     {
+        if (!await _operation.WaitAsync(0)) { Log("Another device operation is already running."); return; }
         _busy = true;
         UseWaitCursor = true;
         try { await action(); }
-        catch (OperationCanceledException) { Log("Automatic rescue cancelled safely between commands."); _autoState.Text = "CANCELLED - NO FACTORY RESET WAS PERFORMED"; }
+        catch (OperationCanceledException) { Log("Diagnostics operation cancelled."); _autoState.Text = "CANCELLED - LEGACY WRITES REMAIN DISABLED"; }
         catch (Exception ex) { Log("ERROR: " + ex.Message); ShowError(ex.Message); _autoState.Text = "RESCUE STOPPED - REVIEW THE LOG"; }
-        finally { _busy = false; UseWaitCursor = false; }
+        finally { _busy = false; UseWaitCursor = false; _operation.Release(); }
     }
 
     private void Log(string line)

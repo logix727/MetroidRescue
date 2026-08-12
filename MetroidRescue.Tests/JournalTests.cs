@@ -8,7 +8,7 @@ public class JournalTests
     public void CompletedSessionIsNotResumed()
     {
         var journal = new RescueJournal();
-        var device = new FastbootDevice("test-complete", "metroid", "a", true, false, "bl", "");
+        var device = new FastbootDevice("test-complete", "metroid", "a", true, FastbootMode.Bootloader, "bl", "");
         var firmware = new FirmwareInfo("file", "Metroid_Test", "Test", "hash-complete", 1, false, true, "");
         journal.Record("session", "started", device, firmware);
         journal.Record("flash:boot_a", "completed", device, firmware);
@@ -20,7 +20,7 @@ public class JournalTests
     public void InterruptedSessionReturnsCompletedFlashSteps()
     {
         var journal = new RescueJournal();
-        var device = new FastbootDevice("test-interrupted", "metroid", "a", true, false, "bl", "");
+        var device = new FastbootDevice("test-interrupted", "metroid", "a", true, FastbootMode.Bootloader, "bl", "");
         var firmware = new FirmwareInfo("file", "Metroid_Test", "Test", "hash-interrupted", 1, false, true, "");
         journal.Record("session", "started", device, firmware);
         journal.Record("flash:boot_a", "completed", device, firmware);

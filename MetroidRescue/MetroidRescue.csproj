@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Tools\platform-tools\**\*" Link="platform-tools\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
-    <Content Include="Tools\usb_driver\**\*" Link="usb_driver\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
-    <Content Include="Tools\payload-dumper-go.exe" Link="payload-dumper-go.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <Content Include="Tools\platform-tools\adb.exe;Tools\platform-tools\fastboot.exe;Tools\platform-tools\AdbWinApi.dll;Tools\platform-tools\AdbWinUsbApi.dll" Link="Tools\win-x64\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <Content Include="Tools\usb_driver\**\*" Link="Tools\windows-driver\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <Content Include="Tools\payload-dumper-go.exe" Link="Tools\win-x64\payload-dumper-go.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
     <Content Include="THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
