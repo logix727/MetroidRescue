@@ -21,23 +21,23 @@ The release ZIP contains:
 
 Do not use v0.1.0. Its untested full-restore sequence was withdrawn after a static safety audit. Use the latest release only.
 
-Current release: [v0.2.0](https://github.com/logix727/MetroidRescue/releases/tag/v0.2.0)
+Current release: [v0.2.1](https://github.com/logix727/MetroidRescue/releases/tag/v0.2.1)
 
-- [Direct v0.2.0 ZIP download](https://github.com/logix727/MetroidRescue/releases/download/v0.2.0/MetroidRescue-v0.2.0.zip)
-- ZIP SHA-256: `320aa71aac8e0170fcd3211864c09ad1c1b9f3d54aedac8586fe114c671e1e08`
+- [Direct v0.2.1 ZIP download](https://github.com/logix727/MetroidRescue/releases/download/v0.2.1/MetroidRescue-v0.2.1.zip)
+- ZIP SHA-256: `251b8018f0efafcdb96fc3b8b8988d00ac1b9dedfbcbaa09b190b8082bba0679`
 
 Releases are currently unsigned. Verify the SHA-256 before running them.
 
 Windows PowerShell:
 
 ```powershell
-(Get-FileHash .\MetroidRescue-v0.2.0.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+(Get-FileHash .\MetroidRescue-v0.2.1.zip -Algorithm SHA256).Hash.ToLowerInvariant()
 ```
 
 Linux:
 
 ```bash
-sha256sum MetroidRescue-v0.2.0.zip
+sha256sum MetroidRescue-v0.2.1.zip
 ```
 
 ## What It Does
