@@ -13,8 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
       - run: dotnet restore MetroidRescue.Tests/MetroidRescue.Tests.csproj --locked-mode
@@ -27,8 +27,8 @@ jobs:
         runtime: [linux-x64, win-x64]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
       - run: dotnet restore MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj --locked-mode
@@ -64,7 +64,7 @@ jobs:
             test -f "$root/Tools/windows-driver/android_winusb.inf"
             test ! -e "$root/Tools/linux-x64"
           fi
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: MetroidRescue-${{ matrix.runtime }}
           path: artifacts/${{ matrix.runtime }}
