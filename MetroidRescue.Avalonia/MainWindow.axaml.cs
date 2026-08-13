@@ -161,8 +161,9 @@ public partial class MainWindow : Window
         token.ThrowIfCancellationRequested();
         CancelButton.IsVisible = false;
         Log("Boot-chain write group started. Voluntary cancellation is disabled until all six images and slot activation complete.");
-        foreach (var write in ConservativeRecoveryPlan.Writes) await Flash(device, firmware, manifest, write.Target, write.Image, CancellationToken.None);
-        Phase("ACTIVATING VERIFIED SLOT A", 88); await Fb(device, CancellationToken.None, "set_active", "a");
+        await ConservativeRecoveryPlan.ExecuteAsync(
+            (target, image) => Flash(device, firmware, manifest, target, image, CancellationToken.None),
+            async () => { Phase("ACTIVATING VERIFIED SLOT A", 88); await Fb(device, CancellationToken.None, "set_active", "a"); });
         CancelButton.IsVisible = true;
         Phase("REBOOTING AND MONITORING", 92); await Fb(device, token, "reboot");
         var result = await _monitor.WaitForBootAsync(device.Serial, TimeSpan.FromMinutes(5), p => Dispatcher.UIThread.Post(() => RescueProgress.Value = 92 + p * .08), token);

@@ -17,7 +17,8 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
-      - run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release
+      - run: dotnet restore MetroidRescue.Tests/MetroidRescue.Tests.csproj --locked-mode
+      - run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release --no-restore
 
   publish:
     strategy:
@@ -30,10 +31,11 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
+      - run: dotnet restore MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj --locked-mode
       - name: Publish ${{ matrix.runtime }}
         run: >-
           dotnet publish MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj
-          -c Release -r ${{ matrix.runtime }} --self-contained true
+          -c Release -r ${{ matrix.runtime }} --self-contained true --no-restore
           -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
           -o artifacts/${{ matrix.runtime }}
       - name: Smoke test bundled Linux tools
@@ -44,6 +46,24 @@ jobs:
           artifacts/linux-x64/Tools/linux-x64/adb version
           artifacts/linux-x64/Tools/linux-x64/fastboot --version
           artifacts/linux-x64/Tools/linux-x64/payload-dumper-go -h >/dev/null
+      - name: Validate package structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="artifacts/${{ matrix.runtime }}"
+          test -f "$root/MetroidRescue" || test -f "$root/MetroidRescue.exe"
+          if [[ "${{ matrix.runtime }}" == "linux-x64" ]]; then
+            test -x "$root/Tools/linux-x64/adb"
+            test -x "$root/Tools/linux-x64/fastboot"
+            test -x "$root/Tools/linux-x64/payload-dumper-go"
+            test ! -e "$root/Tools/win-x64"
+          else
+            test -f "$root/Tools/win-x64/adb.exe"
+            test -f "$root/Tools/win-x64/fastboot.exe"
+            test -f "$root/Tools/win-x64/payload-dumper-go.exe"
+            test -f "$root/Tools/windows-driver/android_winusb.inf"
+            test ! -e "$root/Tools/linux-x64"
+          fi
       - uses: actions/upload-artifact@v6
         with:
           name: MetroidRescue-${{ matrix.runtime }}

@@ -7,18 +7,21 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>MetroidRescue</AssemblyName>
     <RootNamespace>MetroidRescue.Avalonia</RootNamespace>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.10" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.10" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.10" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.10">
+    <PackageReference Include="Avalonia" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.20">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\MetroidRescue\CommandRunner.cs" Link="Core\CommandRunner.cs" />
@@ -34,7 +37,10 @@
     <Compile Include="..\MetroidRescue\RecoveryReportService.cs" Link="Core\RecoveryReportService.cs" />
     <Compile Include="..\MetroidRescue\ConservativeRecoveryPlan.cs" Link="Core\ConservativeRecoveryPlan.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Tools\win-x64\adb.exe;Tools\win-x64\fastboot.exe;Tools\win-x64\AdbWinApi.dll;Tools\win-x64\AdbWinUsbApi.dll;Tools\win-x64\payload-dumper-go.exe;Tools\linux-x64\adb;Tools\linux-x64\fastboot;Tools\linux-x64\payload-dumper-go;Tools\windows-driver\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+    <Content Include="Tools\win-x64\adb.exe;Tools\win-x64\fastboot.exe;Tools\win-x64\AdbWinApi.dll;Tools\win-x64\AdbWinUsbApi.dll;Tools\win-x64\payload-dumper-go.exe;Tools\windows-driver\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+    <Content Include="Tools\linux-x64\adb;Tools\linux-x64\fastboot;Tools\linux-x64\payload-dumper-go" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 </Project>

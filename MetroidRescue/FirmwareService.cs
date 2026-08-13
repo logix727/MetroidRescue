@@ -8,10 +8,25 @@ internal sealed class FirmwareService
 {
     public static readonly string[] RescuePartitions = ["boot", "init_boot", "dtbo", "recovery", "vendor_boot", "vbmeta"];
     private readonly Action<string> _log;
-    public string OutputDirectory { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MetroidRescue", "images");
-    private string DumperPath => ToolPaths.PayloadDumper;
+    private readonly string _dumperPath;
+    public string OutputDirectory { get; }
+    private string DumperPath => _dumperPath;
 
-    public FirmwareService(Action<string> log) => _log = log;
+    public FirmwareService(Action<string> log)
+    {
+        _log = log;
+        _dumperPath = ToolPaths.PayloadDumper;
+        OutputDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MetroidRescue", "images");
+    }
+
+#if METROID_RESCUE_TESTS
+    internal FirmwareService(Action<string> log, string dumperPath, string outputDirectory)
+    {
+        _log = log;
+        _dumperPath = dumperPath;
+        OutputDirectory = outputDirectory;
+    }
+#endif
 
     public async Task<FirmwareInfo> InspectAsync(string otaPath, CancellationToken token = default)
     {

@@ -1,11 +1,16 @@
-param([string]$Version = "0.2.0")
+param([string]$Version = "0.2.1")
 $ErrorActionPreference = "Stop"
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
 $root = $PSScriptRoot
+[xml]$project = Get-Content -LiteralPath "$root\MetroidRescue.Avalonia.csproj"
+$projectVersion = [string]$project.Project.PropertyGroup.Version
+if ($Version -ne $projectVersion) { throw "Requested release $Version does not match project version $projectVersion." }
 Remove-Item -LiteralPath "$root\dist" -Recurse -Force -ErrorAction SilentlyContinue
-& $dotnet test "$root\..\MetroidRescue.Tests\MetroidRescue.Tests.csproj" -c Release
-& $dotnet publish "$root\MetroidRescue.Avalonia.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o "$root\dist\win-x64"
-& $dotnet publish "$root\MetroidRescue.Avalonia.csproj" -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o "$root\dist\linux-x64"
+& $dotnet restore "$root\..\MetroidRescue.Tests\MetroidRescue.Tests.csproj" --locked-mode
+& $dotnet test "$root\..\MetroidRescue.Tests\MetroidRescue.Tests.csproj" -c Release --no-restore
+& $dotnet restore "$root\MetroidRescue.Avalonia.csproj" --locked-mode
+& $dotnet publish "$root\MetroidRescue.Avalonia.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --no-restore -o "$root\dist\win-x64"
+& $dotnet publish "$root\MetroidRescue.Avalonia.csproj" -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true --no-restore -o "$root\dist\linux-x64"
 Copy-Item -LiteralPath "$root\README.md", "$root\RELEASE_BLOCKERS.md" -Destination "$root\dist\win-x64"
 Copy-Item -LiteralPath "$root\README.md", "$root\LINUX.md", "$root\RELEASE_BLOCKERS.md", "$root\run-metroid-rescue.sh" -Destination "$root\dist\linux-x64"
 $files = Get-ChildItem -LiteralPath "$root\dist" -Recurse -File | Where-Object { $_.FullName -notmatch "deb-stage|AppDir|SHA256SUMS" } | Sort-Object FullName

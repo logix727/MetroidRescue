@@ -7,4 +7,10 @@ internal static class ConservativeRecoveryPlan
         .Select(image => (Target: image + "_" + TargetSlot, Image: image))
         .ToArray();
     public static string ImagePath(string image) => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MetroidRescue", "images", image + ".img");
+
+    public static async Task ExecuteAsync(Func<string, string, Task> flash, Func<Task> activateSlot)
+    {
+        foreach (var write in Writes) await flash(write.Target, write.Image);
+        await activateSlot();
+    }
 }

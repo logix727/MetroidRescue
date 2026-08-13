@@ -7,13 +7,15 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DefineConstants>$(DefineConstants);METROID_RESCUE_TESTS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.5.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageReference Include="coverlet.collector" Version="10.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +32,7 @@
     <Compile Include="..\MetroidRescue\RecoveryMonitor.cs" Link="Core\RecoveryMonitor.cs" />
     <Compile Include="..\MetroidRescue\ConservativeRecoveryPlan.cs" Link="Core\ConservativeRecoveryPlan.cs" />
     <Compile Include="..\MetroidRescue\PreflightService.cs" Link="Core\PreflightService.cs" />
+    <Compile Include="..\MetroidRescue\ProvenanceService.cs" Link="Core\ProvenanceService.cs" />
   </ItemGroup>
 
 </Project>

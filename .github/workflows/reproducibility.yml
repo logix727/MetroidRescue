@@ -1,0 +1,35 @@
+name: Reproducibility
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 6 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  compare-clean-publishes:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish twice and compare
+        shell: bash
+        run: |
+          set -euo pipefail
+          project=MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj
+          for run in one two; do
+            dotnet clean "$project" -c Release
+            dotnet restore "$project" --locked-mode
+            for runtime in win-x64 linux-x64; do
+              dotnet publish "$project" -c Release -r "$runtime" --self-contained true \
+                -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true \
+                -p:ContinuousIntegrationBuild=true --no-restore -o "repro/$run/$runtime"
+            done
+          done
+          (cd repro/one && find . -type f -print0 | sort -z | xargs -0 sha256sum) > one.sha256
+          (cd repro/two && find . -type f -print0 | sort -z | xargs -0 sha256sum) > two.sha256
+          diff -u one.sha256 two.sha256

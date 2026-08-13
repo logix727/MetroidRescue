@@ -18,7 +18,9 @@ jobs:
       - name: Test
         env:
           METROID_RESCUE_LIVE_TESTS: "true"
-        run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release
+        run: |
+          dotnet restore MetroidRescue.Tests/MetroidRescue.Tests.csproj --locked-mode
+          dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release --no-restore
       - name: Verify tag matches project version
         shell: bash
         run: |
@@ -29,10 +31,11 @@ jobs:
         run: |
           set -euo pipefail
           project=MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj
+          dotnet restore "$project" --locked-mode
           for runtime in win-x64 linux-x64; do
             dotnet publish "$project" -c Release -r "$runtime" --self-contained true \
               -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true \
-              -o "dist/$runtime"
+              --no-restore -o "dist/$runtime"
           done
           cp MetroidRescue.Avalonia/README.md MetroidRescue.Avalonia/RELEASE_BLOCKERS.md dist/win-x64/
           cp MetroidRescue.Avalonia/README.md MetroidRescue.Avalonia/LINUX.md \

@@ -1,0 +1,45 @@
+name: Security
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: "31 7 * * 2"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: |
+          dotnet restore MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj --locked-mode
+          dotnet restore MetroidRescue.Tests/MetroidRescue.Tests.csproj --locked-mode
+      - name: Fail on vulnerable NuGet packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          for project in MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj MetroidRescue.Tests/MetroidRescue.Tests.csproj; do
+            output=$(dotnet list "$project" package --vulnerable --include-transitive)
+            printf '%s\n' "$output"
+            if grep -qE '^\s*>\s' <<<"$output"; then exit 1; fi
+          done
+
+  codeql:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+      - uses: github/codeql-action/autobuild@v4
+      - uses: github/codeql-action/analyze@v4
