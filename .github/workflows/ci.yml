@@ -64,7 +64,7 @@ jobs:
             test -f "$root/Tools/windows-driver/android_winusb.inf"
             test ! -e "$root/Tools/linux-x64"
           fi
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: MetroidRescue-${{ matrix.runtime }}
           path: artifacts/${{ matrix.runtime }}
