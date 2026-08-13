@@ -38,8 +38,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
       - uses: github/codeql-action/init@v4
         with:
           languages: csharp
-      - uses: github/codeql-action/autobuild@v4
+      - name: Build analyzed projects
+        run: |
+          dotnet restore MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj --locked-mode
+          dotnet build MetroidRescue.Avalonia/MetroidRescue.Avalonia.csproj -c Release --no-restore
+          dotnet restore MetroidRescue.Tests/MetroidRescue.Tests.csproj --locked-mode
+          dotnet build MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release --no-restore
       - uses: github/codeql-action/analyze@v4
