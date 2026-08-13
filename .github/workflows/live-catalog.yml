@@ -15,7 +15,7 @@ jobs:
       METROID_RESCUE_LIVE_TESTS: "true"
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
       - run: dotnet test MetroidRescue.Tests/MetroidRescue.Tests.csproj -c Release --filter Category=Live
